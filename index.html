@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pouring the Future — HTIL × CFSG</title>
+<style>
+:root{
+  --paper:#FAFAFA; --ink:#141414; --muted:#6B6B6B; --hair:#E4E4E4;
+  --accent:#E4002B; --accent-l:#FF6B7A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#EFEFEF}
+body{font-family:"Helvetica Neue","Inter","Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased;color:var(--ink)}
+
+#stageWrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--paper)}
+
+.slide{position:absolute;inset:0;background:var(--paper);color:var(--ink);padding:72px 88px;display:none;overflow:hidden}
+.slide.active{display:grid}
+.slide.dark{background:var(--ink);color:var(--paper);--hair:rgba(250,250,250,.16);--muted:#9A9A9A;--accent:var(--accent-l)}
+
+/* ---------- type ---------- */
+h1{font-size:84px;line-height:.95;font-weight:500;letter-spacing:-.03em}
+h2{font-size:48px;line-height:1.06;font-weight:500;letter-spacing:-.025em}
+.slide.lay-split h2,.slide.lay-split-r h2,.slide.lay-bands h2,.slide.lay-figband h2{font-size:52px}
+.mark{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.mark.acc{color:var(--accent)}
+.body{font-size:19px;line-height:1.58;color:#2A2A2A;max-width:46ch}
+.slide.dark .body{color:#D8D8D8}
+.lead{font-size:20px;line-height:1.55;color:#C9C9C9;max-width:62ch}
+.cap{font-size:13px;letter-spacing:.02em;color:var(--muted);line-height:1.5}
+.rule{display:block;height:1px;background:var(--hair);width:100%}
+.rule.short{width:132px}
+.rule.acc{background:var(--accent)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);vertical-align:middle;margin-right:10px}
+
+/* ---------- title ---------- */
+.lay-title-big{grid-template-rows:auto 1fr auto;padding:72px 88px 64px}
+.tblock{align-self:end;max-width:1000px}
+.tblock .rule{margin:34px 0 26px;width:180px}
+.tfoot{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--hair);padding-top:18px;font-size:13px;color:var(--muted);letter-spacing:.02em}
+
+/* ---------- hero ---------- */
+.lay-hero{grid-template-columns:1.02fr 1fr;grid-template-rows:auto 1fr;column-gap:72px;row-gap:34px;align-items:center}
+.lay-hero .mark{grid-column:1/-1;align-self:start}
+.huge{font-size:164px;line-height:.86;letter-spacing:-.045em;font-weight:500;color:var(--accent)}
+.huge span{font-size:88px;letter-spacing:-.02em}
+.herofig .rule{margin:30px 0 16px;width:250px}
+.herotxt .rule{margin:26px 0 22px;width:112px}
+
+/* ---------- quad ---------- */
+.lay-quad{grid-template-rows:auto 1fr auto;row-gap:0}
+.qhead .rule{margin-top:26px}
+.qhead h2{max-width:20ch}
+.quad{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;margin-top:4px}
+.quad>div{padding:26px 36px 20px 0;border-top:1px solid var(--hair)}
+.quad>div:nth-child(even){padding-left:36px;border-left:1px solid var(--hair)}
+.quad h3{font-size:21px;font-weight:500;letter-spacing:-.01em;margin:10px 0 8px}
+.quad p{font-size:18px;line-height:1.5;color:var(--muted);max-width:28ch}
+.qcap{padding-top:18px;border-top:1px solid var(--hair);display:flex;align-items:center}
+
+/* ---------- compare ---------- */
+.lay-compare{grid-template-rows:auto 1fr;row-gap:34px}
+.cmp{display:grid;grid-template-columns:1fr 1px 1fr;column-gap:52px}
+.cmpdiv{background:var(--hair);position:relative}
+.cmpdiv::after{content:"";position:absolute;left:-3px;top:50%;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.cmp ul{list-style:none}
+.cmp li{font-size:18px;line-height:1.42;padding:11px 0;border-top:1px solid var(--hair);color:#2A2A2A}
+.cmp li:first-child{border-top:0}
+.cmph{font-size:23px;font-weight:500;letter-spacing:-.015em;margin:10px 0 4px}
+.cmpf{font-size:13px;color:var(--muted);margin-bottom:18px;letter-spacing:.02em}
+
+/* ---------- rail ---------- */
+.lay-rail{grid-template-columns:74px 1fr;column-gap:56px}
+.rail{border-right:1px solid var(--hair);position:relative}
+.rail .rot{position:absolute;top:0;left:0;transform:rotate(90deg);transform-origin:left top;white-space:nowrap;padding-left:4px}
+.railcol{display:grid;grid-template-rows:auto 1fr auto;align-content:start}
+.railcol h2{max-width:24ch}
+.bandlist{margin-top:30px}
+.bandlist .bd{display:grid;grid-template-columns:230px 1fr;column-gap:40px;padding:19px 0;border-top:1px solid var(--hair);align-items:baseline}
+.bandlist .bd p{font-size:18px;line-height:1.5;color:#2A2A2A}
+
+/* ---------- bands ---------- */
+.lay-bands{grid-template-rows:auto 1fr auto;row-gap:26px}
+.bhead .rule{margin-top:24px}
+.bands{display:grid;align-content:start}
+.strip{display:grid;grid-template-columns:230px 1fr;column-gap:44px;padding:15px 0;border-top:1px solid var(--hair);align-items:baseline}
+.strip:last-child{border-bottom:1px solid var(--hair)}
+.strip .sname{font-size:20px;font-weight:500;letter-spacing:-.01em}
+.strip .sname i{font-style:normal;color:var(--accent);margin-right:12px}
+.strip .sright{font-size:18px;color:var(--muted);line-height:1.45}
+.bands.two .strip{padding:34px 0}
+.bands.two .strip p{font-size:20px;line-height:1.55;max-width:62ch}
+.bands.four .strip{padding:21px 0}
+.bands.four .strip p{font-size:18px;line-height:1.5;max-width:66ch}
+
+/* ---------- split ---------- */
+.lay-split,.lay-split-r{grid-template-columns:44% 1fr;grid-template-rows:auto 1fr;column-gap:72px;row-gap:34px}
+.lhead{grid-column:1/-1}
+.lhead .rule{margin-top:24px}
+.ltxt .mark{display:block;margin-bottom:12px}
+.ltxt .blk{margin-bottom:28px}
+.fig{display:flex;align-items:center;justify-content:center}
+.fig svg{width:100%;height:auto}
+.lay-split-r .ltxt{order:2}
+.lay-split-r .fig{order:1}
+
+/* ---------- figband ---------- */
+.lay-figband{grid-template-rows:auto auto 1fr}
+.fbtxt{display:grid;grid-template-columns:1fr 1fr;column-gap:72px;margin-top:26px}
+.fbtxt .mark{display:block;margin-bottom:10px}
+.lay-figband .fig{margin:14px -88px -140px;align-items:flex-start}
+
+/* ---------- stack ---------- */
+.lay-stack{grid-template-rows:auto auto 1fr auto;row-gap:0}
+.lay-stack .rule{margin:24px 0 0}
+.lay-stack .fig{margin:28px 0 10px}
+.scols{display:grid;grid-template-columns:repeat(3,1fr);column-gap:48px;border-top:1px solid var(--hair);padding-top:20px}
+.scols p{font-size:18px;line-height:1.5;color:#2A2A2A;margin-top:9px;max-width:30ch}
+
+/* ---------- quote ---------- */
+.lay-quote{grid-template-rows:auto 1fr auto;padding:72px 110px 64px}
+.lay-quote blockquote{align-self:center;font-size:54px;line-height:1.14;font-weight:500;letter-spacing:-.025em;max-width:24ch}
+.lay-quote blockquote em{font-style:normal;color:var(--accent-l)}
+.qfoot{border-top:1px solid var(--hair);padding-top:18px;display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted)}
+.qfoot b{font-weight:500;color:var(--accent-l);letter-spacing:.02em}
+
+/* ---------- svg helpers ---------- */
+.s-h{fill:none;stroke:#C9C9C9;stroke-width:1}
+.s-i{fill:none;stroke:#141414;stroke-width:1}
+.s-a{fill:none;stroke:#E4002B;stroke-width:1.2}
+.s-t{font-size:11px;letter-spacing:.12em;fill:#6B6B6B;font-weight:600;font-family:inherit}
+.s-tk{font-size:11px;letter-spacing:.12em;fill:#141414;font-weight:600;font-family:inherit}
+.s-ta{font-size:11px;letter-spacing:.12em;fill:#E4002B;font-weight:600;font-family:inherit}
+.s-b{font-size:14px;fill:#2A2A2A;font-family:inherit}
+
+/* ---------- chrome ---------- */
+#chrome{position:fixed;right:26px;bottom:20px;display:flex;align-items:center;gap:22px;z-index:40;font-size:12px;letter-spacing:.12em;color:var(--muted)}
+#chrome button{background:none;border:0;font:inherit;letter-spacing:0;font-size:17px;color:var(--muted);cursor:pointer;padding:2px 6px}
+#chrome button:hover{color:var(--accent)}
+#hint{position:fixed;left:26px;bottom:21px;font-size:11px;letter-spacing:.12em;color:#A8A8A8;z-index:40}
+#prog{position:fixed;left:0;bottom:0;height:1px;width:100%;background:var(--hair);z-index:40}
+#prog i{display:block;height:1px;background:var(--accent);width:0}
+.zone{position:fixed;top:0;bottom:46px;width:22%;z-index:30;cursor:pointer}
+.zone.l{left:0}.zone.r{right:0}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:46vh;overflow:auto;background:#141414;color:#E8E8E8;padding:26px 34px 34px;z-index:60;display:none;border-top:1px solid #333}
+#notes.show{display:block}
+#notes h4{font-size:11px;letter-spacing:.12em;color:#8A8A8A;font-weight:600;margin-bottom:12px}
+#notes p{font-size:15px;line-height:1.6;max-width:92ch;margin-bottom:8px;color:#D5D5D5}
+
+/* ---------- mobile ---------- */
+@media screen and (max-width:820px){
+  html,body{overflow:auto;height:auto;background:var(--paper)}
+  #stageWrap{position:static;display:block}
+  #stage{width:100%!important;height:auto!important;transform:none!important}
+  .slide{position:relative!important;inset:auto;width:100%;min-height:100dvh;padding:46px 22px 96px;overflow:visible}
+  .slide.active{display:block}
+  .slide>*{margin-bottom:22px}
+  h1{font-size:clamp(34px,10vw,52px)}
+  h2,.slide.lay-split h2,.slide.lay-split-r h2,.slide.lay-bands h2,.slide.lay-figband h2{font-size:clamp(24px,6.6vw,34px)}
+  .body,.lead,.strip .sright,.bands.two .strip p,.bands.four .strip p,.bandlist .bd p,.quad p,.cmp li,.scols p{font-size:17px}
+  .huge{font-size:clamp(66px,22vw,110px)}.huge span{font-size:48px}
+  .lay-hero,.lay-split,.lay-split-r,.lay-compare,.lay-quad,.lay-bands,.lay-figband,.lay-stack,.lay-title-big,.lay-quote{display:block!important;padding:46px 22px 96px}
+  .cmp,.quad,.fbtxt,.scols,.strip,.bandlist .bd{display:block!important}
+  .quad>div{border-left:0!important;padding:18px 0!important}
+  .cmpdiv{display:none}
+  .cmp>div+div{margin-top:28px;border-top:1px solid var(--hair);padding-top:22px}
+  .strip,.bandlist .bd{padding:16px 0!important}
+  .strip .sright{margin-top:6px}
+  .bands.two .strip p,.bands.four .strip p{margin-top:8px;max-width:none}
+  .lay-rail{display:block!important}.rail{display:none}
+  .lay-figband .fig{margin:18px -22px 0}
+  .lay-quote blockquote{font-size:clamp(26px,7.4vw,38px);max-width:none}
+  .lay-quote,.lay-title-big{min-height:100dvh}
+  #hint,.zone{display:none}
+  #chrome{left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--hair);padding:14px 20px;justify-content:space-between;gap:0}
+  #prog{bottom:auto;top:0;position:fixed}
+  #notes{max-height:60vh}
+}
+
+/* ---------- print (required block) ---------- */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{overflow:visible!important;height:auto!important;background:#fff}
+  .slide{position:relative!important;display:flex!important;width:1280px;height:720px;
+         page-break-after:always;break-after:page;animation:none!important}
+  .slide,.slide.dark{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .slide:last-of-type{break-after:auto}
+}
+@media print{
+  #stageWrap{position:static;display:block}
+  #stage{width:1280px;height:auto;transform:none!important}
+  .slide{display:grid!important}
+  #chrome,#hint,#prog,.zone,#notes{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div id="stageWrap">
+<div id="stage">
+
+<!-- 01 TITLE -->
+<section class="slide dark lay-title-big" data-notes="Open by naming the two labs and the single premise: Coca-Cola is re-engineering the machine and the model; we study the human in front of it.||This is a proposal for a portfolio, not a single project — six research questions and one governance model.||Discussion: Who owns the human-experience question inside Coca-Cola today? Which frontier is most urgent for you this fiscal year? What would make a university partnership easy to say yes to?">
+  <div class="mark">HTIL · University of Alabama &nbsp;&nbsp;×&nbsp;&nbsp; CFSG · University of Florida</div>
+  <div class="tblock">
+    <h1>Pouring<br>the Future</h1>
+    <span class="rule acc"></span>
+    <p class="lead">A joint research partnership between the Human-Technology Interaction Lab (University of Alabama) and the Computing for Social Good Lab (University of Florida).</p>
+  </div>
+  <div class="tfoot"><span>Prepared for The Coca-Cola Company</span><span>Dr. Chris S. Crawford · Dr. Juan E. Gilbert</span></div>
+</section>
+
+<!-- 02 HOOK -->
+<section class="slide lay-hero" data-notes="The investment is real and public. The gap is not money or engineering capacity — it is human science.||Three human unknowns: how people feel in the moment of choice, how they learn, and whether the system treats them fairly.||Discussion: Where is your AI spend concentrated right now? Who validates the human outcome of those models? What happens if the answer comes from inside only?">
+  <div class="mark">The hook</div>
+  <div class="herofig">
+    <div class="huge">$1.1<span>B</span></div>
+    <span class="rule"></span>
+    <div class="cap">Coca-Cola's announced investment in artificial intelligence.</div>
+  </div>
+  <div class="herotxt">
+    <h2>Coca-Cola is putting $1.1B into AI. The open question is human.</h2>
+    <span class="rule short"></span>
+    <p class="body">The beverage, the machine and the moment of choice are all being re-invented. The human science is still missing — how people feel, learn, and are treated fairly by the systems that serve them.</p>
+  </div>
+</section>
+
+<!-- 03 WHY NOW -->
+<section class="slide lay-quad" data-notes="Each of these four is already a live Coca-Cola program — we are not proposing new territory, we are proposing depth.||Personalization and connected dispensing are experience questions; sustainability is a behavior question; inclusive access is a design-and-law question. All four are human questions.||Discussion: Which of the four is furthest ahead? Which has the weakest measurement today? Where would independent evidence help most externally?">
+  <div class="qhead">
+    <div class="mark">Why now</div>
+    <h2>Four frontiers, already in motion.</h2>
+    <span class="rule"></span>
+  </div>
+  <div class="quad">
+    <div><div class="mark">01</div><h3>Personalization</h3><p>AI-driven drinks — Share a Coke on Freestyle.</p></div>
+    <div><div class="mark">02</div><h3>Connected dispensing</h3><p>Next-gen Freestyle Equinox, Mini, mixology counters.</p></div>
+    <div><div class="mark">03</div><h3>Sustainability</h3><p>World Without Waste and reverse vending.</p></div>
+    <div><div class="mark">04</div><h3>Inclusive access</h3><p>Serving every body, ability and language.</p></div>
+  </div>
+  <div class="qcap"><span class="dot"></span><span class="cap">Each frontier raises a human question that in-house engineering is not built to answer.</span></div>
+</section>
+
+<!-- 04 THE PAIRING -->
+<section class="slide lay-compare" data-notes="The two labs were chosen for contrast, not overlap: one reads the human state, one makes sure the system serves everyone fairly.||Credentials matter for external credibility: NSF CAREER on one side; National Medal of Technology and Innovation plus ACM Fellow on the other. Prime III has run real elections.||Discussion: Which capability is scarcer inside your organization? Would you prefer one lab lead a pilot, or both jointly? Which named artifact — NeuroBlock, Prime III, Applications Quest — is closest to your roadmap?">
+  <div>
+    <div class="mark">The pairing</div>
+    <h2 style="margin-top:12px">Two labs, one deliberate contrast.</h2>
+  </div>
+  <div class="cmp">
+    <div>
+      <div class="mark">HTIL · University of Alabama</div>
+      <div class="cmph">Dr. Chris S. Crawford</div>
+      <div class="cmpf">Focus: the body as an interface.</div>
+      <ul>
+        <li>Brain–computer interfaces and human–robot interaction</li>
+        <li>Reads human state in real time: attention, arousal, affect</li>
+        <li>NeuroBlock — low-code neurofeedback for beginners</li>
+        <li>Low-cost physiological sensing hardware (~$4 BOM)</li>
+        <li>NSF CAREER award</li>
+      </ul>
+    </div>
+    <div class="cmpdiv"></div>
+    <div>
+      <div class="mark">CFSG · University of Florida</div>
+      <div class="cmph">Dr. Juan E. Gilbert</div>
+      <div class="cmpf">Focus: technology that serves everyone, fairly.</div>
+      <ul>
+        <li>National Medal of Technology and Innovation, 2023 · ACM Fellow</li>
+        <li>Prime III — open-source universal-design voting, used in real elections</li>
+        <li>Applications Quest — patented AI for fairer, holistic decisions</li>
+        <li>Equity and bias in AI, accessibility</li>
+        <li>Culturally relevant computing and learning technology</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05 CAPABILITY GAP -->
+<section class="slide lay-rail" data-notes="Frame this as make-versus-buy. These four capabilities take a decade of funded research to build and cannot be contracted as deliverables.||Together they form a layer: sensing the person, designing for every person, auditing the model, and teaching at scale.||Discussion: Which of the four do you currently outsource? Who audits your models today? Would co-owned IP change the build-or-partner calculus?">
+  <div class="rail"><div class="rot"><span class="mark acc">05 · The capability gap</span></div></div>
+  <div class="railcol">
+    <h2>Four capabilities Coca-Cola cannot buy off the shelf.</h2>
+    <div class="bandlist">
+      <div class="bd"><div class="mark">Human-state sensing</div><p>Physiological and affective computing, from the electrodes up.</p></div>
+      <div class="bd"><div class="mark">Universal design</div><p>Accessibility as the design premise, not a retrofit.</p></div>
+      <div class="bd"><div class="mark">Equitable AI</div><p>Auditing and correcting models for bias across people and places.</p></div>
+      <div class="bd"><div class="mark">Learning systems</div><p>Intelligent tutoring and low-code tools that teach at scale.</p></div>
+    </div>
+    <div class="qcap" style="margin-top:26px"><span class="dot"></span><span class="cap">Together: the human layer of Coca-Cola's digital future.</span></div>
+  </div>
+</section>
+
+<!-- 06 PORTFOLIO -->
+<section class="slide lay-bands" data-notes="This is the portfolio view. Six projects, each tied to a priority you already fund.||Emphasize: each is a research question, not a specification. The output is peer-reviewed evidence plus protectable IP — not a deliverable invoice.||Discussion: Which two would you fund first? Which priority column is under-served today? Do any of these duplicate work already underway?">
+  <div class="bhead">
+    <div class="mark">The portfolio</div>
+    <h2>Six projects. One partnership.</h2>
+    <span class="rule"></span>
+  </div>
+  <div class="bands">
+    <div class="strip"><div class="sname"><i>A</i>Every Customer, Every Ability</div><div class="sright">Inclusive access</div></div>
+    <div class="strip"><div class="sname"><i>B</i>The Responsive Pour</div><div class="sright">Personalization</div></div>
+    <div class="strip"><div class="sname"><i>C</i>Fair by Design</div><div class="sright">Responsible AI and trust</div></div>
+    <div class="strip"><div class="sname"><i>D</i>Every Bottle Back</div><div class="sright">Sustainability</div></div>
+    <div class="strip"><div class="sname"><i>E</i>The Flavor Academy</div><div class="sright">Digital capability and workforce</div></div>
+    <div class="strip"><div class="sname"><i>F</i>The Living Lab</div><div class="sright">Brand experience</div></div>
+  </div>
+  <div class="cap">Each is a research question, not a spec — designed to produce peer-reviewed results and protectable IP.</div>
+</section>
+
+<!-- 07 PROJECT A -->
+<section class="slide lay-bands" data-notes="Prime III was built so that anyone can vote without assistance — the same method applies directly to a dispenser interface.||The legal floor is rising: ADA enforcement and the European Accessibility Act. Designing inclusively first is cheaper than retrofitting a fleet.||Discussion: What share of your installed base could a blind customer use unaided today? Who signs off on equipment accessibility? Would a public accessibility standard be a marketing asset for you?">
+  <div class="bhead">
+    <div class="mark acc">Project A · Inclusive access</div>
+    <h2>Every customer, every ability.</h2>
+    <span class="rule"></span>
+  </div>
+  <div class="bands two">
+    <div class="strip"><div class="mark">What we build</div><p>Prime III's universal-design method applied to next-gen dispensers — tactile, audio, haptic and multilingual interaction, usable by low-vision, blind, motor-impaired and first-time users without a phone.</p></div>
+    <div class="strip"><div class="mark">Why it matters to Coca-Cola</div><p>Inclusive-by-design equipment widens the addressable market, answers tightening law, and turns "accessible" from a compliance cost into a brand strength.</p></div>
+  </div>
+</section>
+
+<!-- 08 PROJECT B -->
+<section class="slide lay-split" data-notes="The distinction to hold onto: we sense state, never identity. No faces stored, no profiles built.||The consent gate is an architecture decision made with CFSG's responsible-AI practice, which is what separates this from covert sensing and the backlash that follows it.||Discussion: What is your current consent model at the point of dispense? Would a published privacy architecture reduce legal risk? What would a successful pilot metric look like?">
+  <div class="lhead">
+    <div class="mark">Project B · Personalization</div>
+    <h2>The responsive pour.</h2>
+    <span class="rule"></span>
+  </div>
+  <div class="ltxt">
+    <div class="blk"><div class="mark">What we build</div><p class="body">Dispensing that senses engagement and arousal — never identity — and adapts the Share-a-Coke moment in real time, inside a consent-first, privacy-preserving architecture.</p></div>
+    <div class="blk"><div class="mark">Why it matters</div><p class="body">Personalization that respects the person: higher experiential resonance, without the backlash of covert sensing.</p></div>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 470 400" role="img" aria-label="Signal to consent gate to adapted experience pipeline">
+      <text class="s-t" x="2" y="14">ENGAGEMENT · AROUSAL</text>
+      <path class="s-i" d="M2 52 H44 l12-30 12 60 12-48 12 38 12-20 H330"/>
+      <path class="s-h" d="M26 76 V150"/>
+      <rect class="s-a" x="2" y="150" width="300" height="62"/>
+      <text class="s-ta" x="24" y="187">CONSENT GATE</text>
+      <path class="s-h" d="M302 181 H430" stroke-dasharray="3 4"/>
+      <text class="s-t" x="316" y="168">RAW SIGNAL</text>
+      <text class="s-t" x="316" y="204">DISCARDED</text>
+      <path class="s-h" d="M26 212 V292"/>
+      <text class="s-t" x="2" y="320">ADAPTED MOMENT</text>
+      <rect class="s-h" x="2" y="334" width="300" height="62"/>
+      <text class="s-b" x="24" y="371">Freestyle · Share a Coke</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 09 PROJECT C -->
+<section class="slide lay-split-r" data-notes="Applications Quest is patented and already used for holistic, fairer decisions at scale. We adapt the method into an audit instrument.||Independence is the product. An internal review cannot give you the same external assurance — or a publishable method.||Discussion: Which model would you audit first: personalization, pricing, or marketing? What fairness definition does your legal team prefer? Who receives the audit report?">
+  <div class="lhead">
+    <div class="mark">Project C · Responsible AI</div>
+    <h2>Fair by design.</h2>
+    <span class="rule"></span>
+  </div>
+  <div class="ltxt">
+    <div class="blk"><div class="mark">What we build</div><p class="body">Applications Quest adapted into an independent bias-audit framework for personalization, pricing and marketing models — measured across demographics, regions and store types, with reproducible metrics.</p></div>
+    <div class="blk"><div class="mark">Why it matters</div><p class="body">Credible, publishable assurance that a $1.1B AI investment treats consumers equitably — and a method that catches bias before it becomes a headline.</p></div>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 470 380" role="img" aria-label="Audit matrix of model outcomes with one flagged cell">
+      <text class="s-t" x="2" y="14">MODEL × SEGMENT AUDIT</text>
+      <g>
+        <rect class="s-h" x="2" y="34" width="68" height="60"/><rect class="s-h" x="80" y="34" width="68" height="60"/><rect class="s-h" x="158" y="34" width="68" height="60"/><rect class="s-h" x="236" y="34" width="68" height="60"/><rect class="s-h" x="314" y="34" width="68" height="60"/>
+        <rect class="s-h" x="2" y="104" width="68" height="60"/><rect class="s-h" x="80" y="104" width="68" height="60"/><rect class="s-a" x="158" y="104" width="68" height="60"/><rect class="s-h" x="236" y="104" width="68" height="60"/><rect class="s-h" x="314" y="104" width="68" height="60"/>
+        <rect class="s-h" x="2" y="174" width="68" height="60"/><rect class="s-h" x="80" y="174" width="68" height="60"/><rect class="s-h" x="158" y="174" width="68" height="60"/><rect class="s-h" x="236" y="174" width="68" height="60"/><rect class="s-h" x="314" y="174" width="68" height="60"/>
+        <rect class="s-h" x="2" y="244" width="68" height="60"/><rect class="s-h" x="80" y="244" width="68" height="60"/><rect class="s-h" x="158" y="244" width="68" height="60"/><rect class="s-h" x="236" y="244" width="68" height="60"/><rect class="s-h" x="314" y="244" width="68" height="60"/>
+      </g>
+      <circle cx="192" cy="134" r="5" fill="#E4002B"/>
+      <path class="s-a" d="M226 134 H420"/>
+      <text class="s-ta" x="330" y="124">FLAGGED</text>
+      <path class="s-h" d="M2 324 H382"/>
+      <text class="s-t" x="2" y="348">DEMOGRAPHICS · REGIONS · STORE TYPES</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 10 PROJECT D -->
+<section class="slide lay-figband" data-notes="The machines exist. What varies is the reward that actually motivates return behavior, and that varies by community.||The Alabama campus units give us an immediate, instrumented field site — a pilot can start without new hardware.||Discussion: Which markets have the weakest return rates? What incentive levers are you allowed to vary? Would a community-by-community playbook be usable by bottlers?">
+  <div>
+    <div class="mark">Project D · Sustainability</div>
+    <h2 style="margin-top:12px">Every bottle back.</h2>
+  </div>
+  <div class="fbtxt">
+    <div><div class="mark">What we build</div><p class="body">Behavioral science and culturally relevant design layered onto reverse vending — tested on the existing footprint, including units already running on the University of Alabama campus.</p></div>
+    <div><div class="mark">Why it matters</div><p class="body">World Without Waste needs behavior change, not just machines. We test what moves people, community by community, and hand back a playbook.</p></div>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 1104 300" role="img" aria-label="Bottle returned to reverse vending, branching into different community rewards">
+      <path class="s-i" d="M36 26 h22 v16 l10 14 v70 h-42 V56 l10-14 z"/>
+      <path class="s-h" d="M92 92 H168"/>
+      <rect class="s-h" x="168" y="52" width="210" height="82"/>
+      <text class="s-tk" x="192" y="99">REVERSE VENDING</text>
+      <circle cx="402" cy="93" r="5" fill="#E4002B"/>
+      <path class="s-a" d="M378 93 H398"/>
+      <path class="s-h" d="M408 93 C470 93 470 34 536 34"/>
+      <path class="s-h" d="M408 93 C470 93 470 120 536 120"/>
+      <path class="s-h" d="M408 93 C470 93 470 214 536 214"/>
+      <text class="s-tk" x="546" y="38">CASH OR CREDIT</text>
+      <text class="s-tk" x="546" y="124">COMMUNITY FUND</text>
+      <text class="s-tk" x="546" y="218">CAMPUS REWARD</text>
+      <text class="s-t" x="546" y="58">works in one market</text>
+      <text class="s-t" x="546" y="144">lands in another</text>
+      <text class="s-t" x="546" y="238">tested on existing units</text>
+      <text class="s-ta" x="36" y="188">WHAT ACTUALLY MOVES PEOPLE?</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 11 PROJECT E -->
+<section class="slide lay-bands" data-notes="One authoring engine, two audiences. The low-code model proven by NeuroBlock means subject-matter experts author content without engineers.||Internally it is workforce readiness across the bottling system; externally it is a branded learning experience and a STEM pipeline.||Discussion: What does bottler onboarding cost today? Who owns consumer education content? Would a STEM-facing version fit existing community commitments?">
+  <div class="bhead">
+    <div class="mark acc">Project E · Learning and workforce</div>
+    <h2>The flavor academy.</h2>
+    <span class="rule"></span>
+  </div>
+  <div class="bands two">
+    <div class="strip"><div class="mark">What we build</div><p>Two learning platforms from one engine — an intelligent-tutoring system for bottler and franchise teams, and a consumer-facing "science of taste" experience — both authored with the low-code model proven by NeuroBlock.</p></div>
+    <div class="strip"><div class="mark">Why it matters to Coca-Cola</div><p>Faster, cheaper workforce readiness across the bottling system, plus a branded learning experience that deepens consumer connection and feeds a STEM pipeline.</p></div>
+  </div>
+</section>
+
+<!-- 12 PROJECT F -->
+<section class="slide lay-split" data-notes="Sponsorship is currently measured by exposure. This instruments it and measures experience directly.||Embodied hosts — avatars and robots — double as an accessibility test bed for wayfinding and hospitality, feeding straight back into Project A.||Discussion: Which sponsored venue could host a pilot next season? What engagement metric do you report today? Who owns the venue relationship internally?">
+  <div class="lhead">
+    <div class="mark">Project F · Brand experience</div>
+    <h2>The living lab.</h2>
+    <span class="rule"></span>
+  </div>
+  <div class="ltxt">
+    <div class="blk"><div class="mark">What we build</div><p class="body">An instrumented experience at Coca-Cola-sponsored venues — real-time engagement measured with physiological sensing, plus embodied hosts for accessible hospitality and wayfinding.</p></div>
+    <div class="blk"><div class="mark">Why it matters</div><p class="body">Sponsorship becomes measured experience science, with findings that feed straight back into products.</p></div>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 470 380" role="img" aria-label="Crowd measured by sensing, producing an engagement curve">
+      <text class="s-t" x="2" y="14">CROWD</text>
+      <g fill="#9A9A9A">
+        <circle cx="12" cy="40" r="4"/><circle cx="52" cy="40" r="4"/><circle cx="92" cy="40" r="4"/><circle cx="132" cy="40" r="4"/><circle cx="172" cy="40" r="4"/><circle cx="212" cy="40" r="4"/><circle cx="252" cy="40" r="4"/>
+        <circle cx="12" cy="72" r="4"/><circle cx="52" cy="72" r="4"/><circle cx="92" cy="72" r="4"/><circle cx="132" cy="72" r="4"/><circle cx="172" cy="72" r="4"/><circle cx="212" cy="72" r="4"/><circle cx="252" cy="72" r="4"/>
+        <circle cx="12" cy="104" r="4"/><circle cx="52" cy="104" r="4"/><circle cx="92" cy="104" r="4"/><circle cx="132" cy="104" r="4"/><circle cx="172" cy="104" r="4"/><circle cx="212" cy="104" r="4"/><circle cx="252" cy="104" r="4"/>
+      </g>
+      <path class="s-h" d="M132 124 V170"/>
+      <rect class="s-h" x="2" y="170" width="300" height="58"/>
+      <text class="s-tk" x="24" y="205">SENSING · EMBODIED HOSTS</text>
+      <path class="s-h" d="M132 228 V266"/>
+      <text class="s-t" x="2" y="294">MEASURED ENGAGEMENT</text>
+      <path class="s-h" d="M2 364 H400"/>
+      <path class="s-a" d="M2 352 C60 352 74 312 118 312 C160 312 172 344 214 338 C258 332 268 300 320 302 C356 303 374 318 400 316"/>
+    </svg>
+  </div>
+</section>
+
+<!-- 13 WHAT COCA-COLA GETS -->
+<section class="slide lay-bands" data-notes="This slide answers the procurement question. A vendor sells deliverables; a research partner produces evidence, IP and people.||De-risking is the commercial argument: small evidence-backed pilots decide what deserves capital.||Discussion: How would you want IP split? Which claim most needs independent backing right now? Do you have a graduate recruiting gap in AI or HCC?">
+  <div class="bhead">
+    <div class="mark">The offer</div>
+    <h2>Not a vendor. A research partner.</h2>
+    <span class="rule acc"></span>
+  </div>
+  <div class="bands four">
+    <div class="strip"><div class="mark">Publishable, patentable IP</div><p>Peer-reviewed results and protectable technology, co-owned under a negotiated agreement.</p></div>
+    <div class="strip"><div class="mark">De-risked innovation</div><p>Small, evidence-backed pilots before any large commitment.</p></div>
+    <div class="strip"><div class="mark">Credibility</div><p>Accessibility, equity and sustainability claims backed by independent university research.</p></div>
+    <div class="strip"><div class="mark">Talent</div><p>A direct pipeline to trained graduate researchers in HCC, AI and BCI.</p></div>
+  </div>
+</section>
+
+<!-- 14 THE MODEL -->
+<section class="slide lay-stack" data-notes="Governance first: two PIs, one program manager, 4-6 graduate researchers across two campuses — one program, not two subcontracts.||Cadence is deliberately staged: 90-day scoping sprint, funded pilot year, annual review that decides what scales.||Matched federal and foundation funding lowers Coca-Cola's net cost per project. Discussion: Who would be our internal sponsor? Which quarter could a sprint start? What approval does a sponsored-research agreement need?">
+  <div class="mark">The model</div>
+  <h2 style="margin-top:12px">How we would work together.</h2>
+  <span class="rule"></span>
+  <div class="fig">
+    <svg viewBox="0 0 1104 170" role="img" aria-label="Timeline from 90-day scoping sprint to funded pilot year to annual review">
+      <path class="s-h" d="M8 86 H1096"/>
+      <circle cx="60" cy="86" r="6" fill="#E4002B"/>
+      <circle cx="520" cy="86" r="5" fill="#141414"/>
+      <circle cx="980" cy="86" r="5" fill="#141414"/>
+      <text class="s-ta" x="60" y="58">90-DAY SCOPING SPRINT</text>
+      <text class="s-b" x="60" y="118">Pick the first two projects</text>
+      <text class="s-tk" x="520" y="58">FUNDED PILOT YEAR</text>
+      <text class="s-b" x="520" y="118">Evidence, prototypes, papers</text>
+      <text class="s-tk" x="820" y="58">ANNUAL REVIEW</text>
+      <text class="s-b" x="820" y="118">Choose what scales</text>
+    </svg>
+  </div>
+  <div class="scols">
+    <div><div class="mark">Structure</div><p>Two PIs, one program manager, 4–6 graduate researchers across both campuses.</p></div>
+    <div><div class="mark">Funding</div><p>Sponsored research matched by federal and foundation grants, lowering net cost per project.</p></div>
+    <div><div class="mark">Deliverables</div><p>Quarterly findings, published papers, working prototypes, annual leadership report.</p></div>
+  </div>
+</section>
+
+<!-- 15 CLOSE -->
+<section class="slide dark lay-quote" data-notes="Land the contrast: the product is engineered to a science; the moment around it is not — yet.||Make the ask concrete and small: a 90-day scoping sprint to select the first two projects.||Discussion: Who should be in the room for the sprint? Which two projects would you nominate today? What would make this a yes by next quarter?">
+  <div class="mark">The close</div>
+  <blockquote>The drink is already engineered to a science. The moment around it is <em>not — yet.</em></blockquote>
+  <div class="qfoot">
+    <span>HTIL × CFSG — a proposed partnership with The Coca-Cola Company</span>
+    <b>THE ASK: A 90-DAY SCOPING SPRINT TO PICK THE FIRST TWO PROJECTS</b>
+  </div>
+</section>
+
+</div>
+</div>
+
+<div class="zone l" id="zl" aria-hidden="true"></div>
+<div class="zone r" id="zr" aria-hidden="true"></div>
+
+<div id="hint">← → NAVIGATE · N NOTES</div>
+<div id="chrome">
+  <span id="counter">01 / 15</span>
+  <span><button id="prev" aria-label="Previous slide">←</button><button id="next" aria-label="Next slide">→</button></span>
+</div>
+<div id="prog"><i id="progfill"></i></div>
+<div id="notes" aria-live="polite"><h4>Speaker notes</h4><div id="notesBody"></div></div>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var counter=document.getElementById('counter');
+  var fill=document.getElementById('progfill');
+  var notes=document.getElementById('notes');
+  var notesBody=document.getElementById('notesBody');
+  var mq=window.matchMedia('screen and (max-width:820px)');
+  var i=0;
+
+  function pad(n){return (n<10?'0':'')+n;}
+
+  function fit(){
+    document.body.classList.toggle('mobile',mq.matches);
+    if(mq.matches){stage.style.transform='';return;}
+    var s=Math.min(window.innerWidth/1280,window.innerHeight/720);
+    stage.style.transform='scale('+s+')';
+  }
+
+  function render(){
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    counter.textContent=pad(i+1)+' / '+pad(slides.length);
+    fill.style.width=((i+1)/slides.length*100)+'%';
+    var raw=slides[i].getAttribute('data-notes')||'';
+    notesBody.innerHTML=raw.split('||').map(function(p){return '<p>'+p+'</p>';}).join('');
+    window.scrollTo(0,0);
+  }
+  function go(n){i=(n+slides.length)%slides.length;render();}
+
+  document.getElementById('prev').onclick=function(e){e.stopPropagation();go(i-1);};
+  document.getElementById('next').onclick=function(e){e.stopPropagation();go(i+1);};
+  document.getElementById('zl').onclick=function(){go(i-1);};
+  document.getElementById('zr').onclick=function(){go(i+1);};
+
+  document.addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();go(i+1);}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(i-1);}
+    else if(k==='Home'){e.preventDefault();go(0);}
+    else if(k==='End'){e.preventDefault();go(slides.length-1);}
+    else if(k==='n'||k==='N'){notes.classList.toggle('show');}
+    else if(k==='Escape'){notes.classList.remove('show');}
+  });
+
+  var x0=null,y0=null;
+  document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(x0===null)return;
+    var dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0;
+    if(Math.abs(dx)>52&&Math.abs(dx)>Math.abs(dy)*1.5){go(dx<0?i+1:i-1);}
+    x0=null;y0=null;
+  },{passive:true});
+
+  window.addEventListener('resize',fit);
+  if(mq.addEventListener)mq.addEventListener('change',fit);
+  fit();render();
+})();
+</script>
+</body>
+</html>
